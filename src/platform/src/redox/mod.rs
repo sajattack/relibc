@@ -1,6 +1,7 @@
 use core::ptr;
 use core::slice;
 use core::mem;
+use alloc::Vec;
 use syscall;
 use syscall::flag::*;
 use syscall::data::TimeSpec as redox_timespec;
@@ -47,6 +48,41 @@ pub fn dup(fd: c_int) -> c_int {
 pub fn dup2(fd1: c_int, fd2: c_int) -> c_int {
     e(syscall::dup2(fd1 as usize, fd2 as usize, &[])) as c_int
 }
+
+pub fn execve(
+    path: *const c_char,
+    argv: *const *mut c_char,
+    envp: *const *mut c_char,
+) -> c_int {
+    unsafe {
+        let mut env = envp;
+        while !(*env).is_null() {
+            let slice = c_str(*env);
+            // Should always contain a =, but worth checking
+            if let Some(sep) = slice.iter().position(|&c| c == b'=') {
+                let mut path = b"env:".to_vec();
+                path.extend_from_slice(&slice[..sep]);
+                path.push((b"\0")[0]);
+                let path = ::cstr_from_bytes_with_nul_unchecked(path.as_slice());
+                let fd = open(path, O_WRONLY as i32, O_CREAT as u16);
+                if fd != -1 {
+                    let _ = syscall::write(fd as usize, &slice[sep+1..]);
+                }
+            }
+            env = env.offset(1);
+        }
+
+        let mut args: Vec<[usize; 2]> = Vec::new();
+        let mut arg = argv;
+        while !(*arg).is_null() {
+            args.push([*arg as usize, c_str(*arg).len()]);
+            arg = arg.offset(1);
+        }
+
+        e(syscall::execve(c_str(path), &args)) as c_int
+    }
+}
+
 
 pub fn exit(status: c_int) -> ! {
     syscall::exit(status as usize);

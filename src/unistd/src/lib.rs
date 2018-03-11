@@ -107,7 +107,7 @@ pub extern "C" fn encrypt(block: [c_char; 64], edflag: c_int) {
 
 #[no_mangle]
 pub extern "C" fn execv(path: *const c_char, argv: *const *mut c_char) -> c_int {
-    unimplemented!();
+    platform::execve(path, argv, ptr::null())
 }
 
 #[no_mangle]
@@ -116,7 +116,7 @@ pub extern "C" fn execve(
     argv: *const *mut c_char,
     envp: *const *mut c_char,
 ) -> c_int {
-    unimplemented!();
+    platform::execve(path, argv, envp)
 }
 
 #[no_mangle]
@@ -347,7 +347,7 @@ pub extern "C" fn sbrk(incr: intptr_t) -> *mut c_void {
 
 #[no_mangle]
 pub extern "C" fn setgid(gid: gid_t) -> c_int {
-    unimplemented!();
+    platform::setregid(gid, gid)
 }
 
 #[no_mangle]
@@ -377,7 +377,7 @@ pub extern "C" fn setsid() -> pid_t {
 
 #[no_mangle]
 pub extern "C" fn setuid(uid: uid_t) -> c_int {
-    unimplemented!();
+    platform::setreuid(uid, uid)
 }
 
 #[no_mangle]

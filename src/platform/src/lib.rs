@@ -2,6 +2,7 @@
 
 #![no_std]
 #![allow(non_camel_case_types)]
+#![feature(alloc)]
 //TODO #![feature(thread_local)]
 
 #[cfg(all(not(feature = "no_std"), target_os = "linux"))]
@@ -21,6 +22,8 @@ mod sys;
 #[cfg(all(not(feature = "no_std"), target_os = "redox"))]
 #[path = "redox/mod.rs"]
 mod sys;
+
+extern crate alloc;
 
 pub mod types;
 
@@ -52,6 +55,10 @@ pub unsafe fn c_str_n(s: *const c_char, n: usize) -> &'static [u8] {
     }
 
     slice::from_raw_parts(s as *const u8, size as usize)
+}
+
+pub unsafe fn cstr_from_bytes_with_nul_unchecked(bytes: &[u8]) -> *const c_char {
+    &*(bytes as *const [u8] as *const c_char)
 }
 
 pub struct FileWriter(pub c_int);
