@@ -3,6 +3,7 @@
 #![no_std]
 #![allow(non_camel_case_types)]
 #![feature(alloc)]
+#![feature(global_allocator)]
 //TODO #![feature(thread_local)]
 
 #[cfg(all(not(feature = "no_std"), target_os = "linux"))]
@@ -24,6 +25,7 @@ mod sys;
 mod sys;
 
 extern crate alloc;
+extern crate ralloc;
 
 pub mod types;
 
@@ -31,6 +33,8 @@ use core::fmt;
 
 use types::*;
 
+#[global_allocator]
+static ALLOCATOR: ralloc::Allocator = ralloc::Allocator;
 //TODO #[thread_local]
 #[allow(non_upper_case_globals)]
 #[no_mangle]

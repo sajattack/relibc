@@ -49,11 +49,7 @@ pub fn dup2(fd1: c_int, fd2: c_int) -> c_int {
     e(syscall::dup2(fd1 as usize, fd2 as usize, &[])) as c_int
 }
 
-pub fn execve(
-    path: *const c_char,
-    argv: *const *mut c_char,
-    envp: *const *mut c_char,
-) -> c_int {
+pub fn execve(path: *const c_char, argv: *const *mut c_char, envp: *const *mut c_char) -> c_int {
     unsafe {
         let mut env = envp;
         while !(*env).is_null() {
@@ -66,7 +62,7 @@ pub fn execve(
                 let path = ::cstr_from_bytes_with_nul_unchecked(path.as_slice());
                 let fd = open(path, O_WRONLY as i32, O_CREAT as u16);
                 if fd != -1 {
-                    let _ = syscall::write(fd as usize, &slice[sep+1..]);
+                    let _ = syscall::write(fd as usize, &slice[sep + 1..]);
                 }
             }
             env = env.offset(1);
@@ -82,7 +78,6 @@ pub fn execve(
         e(syscall::execve(c_str(path), &args)) as c_int
     }
 }
-
 
 pub fn exit(status: c_int) -> ! {
     syscall::exit(status as usize);

@@ -9,6 +9,7 @@ BINS=\
 	ctype \
 	dup \
 	error \
+	exec \
 	fchdir \
 	fcntl \
 	fsync \
@@ -79,4 +80,4 @@ GCCTAIL=\
 	../openlibm/libopenlibm.a
 
 %: %.c
-	gcc -fno-stack-protector -Wall $(GCCHEAD) "$<" $(GCCTAIL) -o "$@"
+	gcc -no-pie -fno-stack-protector -Wall $(GCCHEAD) "$<" $(GCCTAIL) -o "$@"

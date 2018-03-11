@@ -1,11 +1,16 @@
 //! unistd implementation for Redox, following http://pubs.opengroup.org/onlinepubs/7908799/xsh/unistd.h.html
 
 #![no_std]
+#![feature(alloc)]
 
 extern crate platform;
+extern crate alloc;
 
 pub use platform::types::*;
+use platform::c_str;
+
 use core::ptr;
+use alloc::Vec;
 
 pub const R_OK: c_int = 1;
 pub const W_OK: c_int = 2;
@@ -24,6 +29,9 @@ pub const F_TEST: c_int = 3;
 pub const STDIN_FILENO: c_int = 0;
 pub const STDOUT_FILENO: c_int = 1;
 pub const STDERR_FILENO: c_int = 2;
+
+#[no_mangle]
+pub static mut environ: *const *mut c_char = 0 as *const *mut c_char;
 
 #[no_mangle]
 pub extern "C" fn _exit(status: c_int) {
@@ -90,24 +98,30 @@ pub extern "C" fn encrypt(block: [c_char; 64], edflag: c_int) {
     unimplemented!();
 }
 
-// #[no_mangle]
-// pub extern "C" fn execl(path: *const c_char, arg0: *const c_char /* TODO: , mut args: ... */) -> c_int {
-//     unimplemented!();
-// }
-//
-// #[no_mangle]
-// pub extern "C" fn execle(path: *const c_char, arg0: *const c_char /* TODO: , mut args: ... */) -> c_int {
-//     unimplemented!();
-// }
-//
-// #[no_mangle]
-// pub extern "C" fn execlp(file: *const c_char, arg0: *const c_char /* TODO: , mut args: ... */) -> c_int {
-//     unimplemented!();
-// }
+#[no_mangle]
+pub extern "C" fn _execl(path: *const c_char, args: *const *mut c_char) -> c_int {
+    unsafe {
+        _execle(path, args, environ)
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn _execle(
+    path: *const c_char,
+    args: *const *mut c_char,
+    envp: *const *mut c_char,
+) -> c_int {
+    platform::execve(path, args, envp)
+}
+
+#[no_mangle]
+pub extern "C" fn _execlp(file: *const c_char, args: *const *mut c_char) -> c_int {
+    execvp(file, args)
+}
 
 #[no_mangle]
 pub extern "C" fn execv(path: *const c_char, argv: *const *mut c_char) -> c_int {
-    platform::execve(path, argv, ptr::null())
+    unsafe { platform::execve(path, argv, environ) }
 }
 
 #[no_mangle]
@@ -121,7 +135,25 @@ pub extern "C" fn execve(
 
 #[no_mangle]
 pub extern "C" fn execvp(file: *const c_char, argv: *const *mut c_char) -> c_int {
-    unimplemented!();
+    unsafe {
+        let path = platform::cstr_from_bytes_with_nul_unchecked(b"/bin/sh\0");
+        let mut args: Vec<Vec<u8>> = Vec::new();
+        args.push(b"-c\0".to_vec());
+        let mut file = c_str(file).to_vec();
+        file.push(b"\0"[0]);
+        args.push(file);
+        
+        let mut argv = argv;
+        while !(*argv).is_null() {
+            let mut arg = c_str(*argv).to_vec();
+            arg.push(b"\0"[0]);
+            args.push(arg);
+            argv = argv.offset(1);
+        }
+
+        let c_args = args.iter().map(|x| x.as_ptr() as *mut c_char).collect::<Vec<*mut c_char>>().as_ptr();
+        execve(path, c_args, environ)
+    }
 }
 
 #[no_mangle]

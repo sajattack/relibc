@@ -11,6 +11,7 @@
 /dup
 /dup.out
 /error
+/exec
 /fchdir
 /fcntl
 /fsync
