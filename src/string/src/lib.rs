@@ -129,15 +129,15 @@ pub unsafe extern "C" fn strcspn(s1: *const c_char, s2: *const c_char) -> c_ulon
 
     let mut i = 0;
     while *s2.offset(i) != 0 {
-        byteset[(*s2.offset(i) as usize) / (8 * mem::size_of::<usize>())] |=
-            1 << (*s2.offset(i) as usize % (8 * mem::size_of::<usize>()));
+        byteset[(*s2.offset(i) as usize) / (8 * byteset.len())] |=
+            1 << (*s2.offset(i) as usize % (8 * byteset.len()));
         i += 1;
     }
 
     i = 0; // reset
     while *s2.offset(i) != 0 {
-        if byteset[(*s2.offset(i) as usize) / (8 * mem::size_of::<usize>())]
-            & 1 << (*s2.offset(i) as usize % (8 * mem::size_of::<usize>())) > 0
+        if byteset[(*s2.offset(i) as usize) / (8 * byteset.len())]
+            & 1 << (*s2.offset(i) as usize % (8 * byteset.len())) > 0
         {
             break;
         }
@@ -255,8 +255,17 @@ pub extern "C" fn strpbrk(s1: *const c_char, s2: *const c_char) -> *mut c_char {
 }
 
 #[no_mangle]
-pub extern "C" fn strrchr(s: *const c_char, c: c_int) -> *mut c_char {
-    unimplemented!();
+pub unsafe extern "C" fn strrchr(s: *const c_char, c: c_int) -> *mut c_char {
+    let len = strlen(s) as isize;
+    let c = c as i8;
+    let mut i = len - 1;
+    while i >= 0 {
+        if *s.offset(i) == c {
+            return s.offset(i) as *mut c_char;
+        }
+        i -= 1;
+    }
+    ptr::null_mut()
 }
 
 #[no_mangle]
@@ -272,15 +281,15 @@ pub unsafe extern "C" fn strspn(s1: *const c_char, s2: *const c_char) -> c_ulong
 
     let mut i = 0;
     while *s2.offset(i) != 0 {
-        byteset[(*s2.offset(i) as usize) / (8 * mem::size_of::<usize>())] |=
-            1 << (*s2.offset(i) as usize % (8 * mem::size_of::<usize>()));
+        byteset[(*s2.offset(i) as usize) / (8 * byteset.len())] |=
+            1 << (*s2.offset(i) as usize % (8 * byteset.len()));
         i += 1;
     }
 
     i = 0; // reset
     while *s2.offset(i) != 0 {
-        if byteset[(*s2.offset(i) as usize) / (8 * mem::size_of::<usize>())]
-            & 1 << (*s2.offset(i) as usize % (8 * mem::size_of::<usize>())) < 1
+        if byteset[(*s2.offset(i) as usize) / (8 * byteset.len())]
+            & 1 << (*s2.offset(i) as usize % (8 * byteset.len())) < 1
         {
             break;
         }
