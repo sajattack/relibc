@@ -65,7 +65,6 @@ int execlp(const char* file, const char* argv0, ...) {
 
 int execvp(const char* file, char *const _argv[]) {
     int argc = sizeof(_argv)/sizeof(_argv[0]);
-    va_list ap;
     char* argv[argc+3];
     const char* path = "/bin/sh";
     argv[0] = "-c";
