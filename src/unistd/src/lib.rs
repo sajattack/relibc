@@ -3,8 +3,8 @@
 #![no_std]
 #![feature(alloc)]
 
-extern crate platform;
 extern crate alloc;
+extern crate platform;
 
 pub use platform::types::*;
 use platform::c_str;
@@ -101,7 +101,7 @@ pub extern "C" fn encrypt(block: [c_char; 64], edflag: c_int) {
 /*
  *#[no_mangle]
  *pub extern "C" fn _execl(path: *const c_char, args: *const *mut c_char) -> c_int {
- *    
+ *
  *}
  */
 
@@ -119,15 +119,13 @@ pub extern "C" fn encrypt(block: [c_char; 64], edflag: c_int) {
 /*
  *#[no_mangle]
  *pub extern "C" fn execlp(file: *const c_char, args: *const *mut c_char) -> c_int {
- *    
+ *
  *}
  */
 
 #[no_mangle]
 pub extern "C" fn execv(path: *const c_char, argv: *const *mut c_char) -> c_int {
-    unsafe {
-        execve(path, argv, environ)
-    }
+    unsafe { execve(path, argv, environ) }
 }
 
 #[no_mangle]
