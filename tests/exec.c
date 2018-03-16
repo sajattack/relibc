@@ -2,6 +2,7 @@
 
 int main(int argc, char** argv) {
     char *const args[1] = {"arg"};
-    execvp("./exec.sh", args);
-    perror("execvp");
+    execv("write", args);
+    perror("execv");
+    return 0;
 }
