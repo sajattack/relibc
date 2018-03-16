@@ -1,16 +1,13 @@
 //! unistd implementation for Redox, following http://pubs.opengroup.org/onlinepubs/7908799/xsh/unistd.h.html
 
 #![no_std]
-#![feature(alloc)]
 
-extern crate alloc;
 extern crate platform;
 
 pub use platform::types::*;
 use platform::c_str;
 
 use core::ptr;
-use alloc::Vec;
 
 pub const R_OK: c_int = 1;
 pub const W_OK: c_int = 2;
