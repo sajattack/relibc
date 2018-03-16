@@ -98,21 +98,23 @@ pub extern "C" fn encrypt(block: [c_char; 64], edflag: c_int) {
     unimplemented!();
 }
 
-#[no_mangle]
-pub extern "C" fn _execl(path: *const c_char, args: *const *mut c_char) -> c_int {
-    unsafe {
-        _execle(path, args, environ)
-    }
-}
+/*
+ *#[no_mangle]
+ *pub extern "C" fn _execl(path: *const c_char, args: *const *mut c_char) -> c_int {
+ *    
+ *}
+ */
 
-#[no_mangle]
-pub extern "C" fn _execle(
-    path: *const c_char,
-    args: *const *mut c_char,
-    envp: *const *mut c_char,
-) -> c_int {
-    platform::execve(path, args, envp)
-}
+/*
+ *#[no_mangle]
+ *pub extern "C" fn _execle(
+ *    path: *const c_char,
+ *    args: *const *mut c_char,
+ *    envp: *const *mut c_char,
+ *) -> c_int {
+ *
+ *}
+ */
 
 /*
  *#[no_mangle]
@@ -137,30 +139,10 @@ pub extern "C" fn execve(
     platform::execve(path, argv, envp)
 }
 
-/*
- *#[no_mangle]
- *pub extern "C" fn execvp(file: *const c_char, argv: *const *mut c_char) -> c_int {
- *    unsafe {
- *        let path = platform::cstr_from_bytes_with_nul_unchecked(b"/bin/sh\0");
- *        let mut args: Vec<Vec<u8>> = Vec::new();
- *        args.push(b"-c\0".to_vec());
- *        let mut file = c_str(file).to_vec();
- *        file.push(b"\0"[0]);
- *        args.push(file);
- *        
- *        let mut argv = argv;
- *        while !(*argv).is_null() {
- *            let mut arg = c_str(*argv).to_vec();
- *            arg.push(b"\0"[0]);
- *            args.push(arg);
- *            argv = argv.offset(1);
- *        }
- *
- *        let c_args = args.iter().map(|x| x.as_ptr() as *mut c_char).collect::<Vec<*mut c_char>>().as_ptr();
- *        execve(path, c_args, environ)
- *    }
- *}
- */
+#[no_mangle]
+pub extern "C" fn execvp(file: *const c_char, argv: *const *mut c_char) -> c_int {
+    unimplemented!();
+}
 
 #[no_mangle]
 pub extern "C" fn fchown(fildes: c_int, owner: uid_t, group: gid_t) -> c_int {

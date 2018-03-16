@@ -58,11 +58,8 @@ pub fn execve(path: *const c_char, argv: *const *mut c_char, envp: *const *mut c
             if let Some(sep) = slice.iter().position(|&c| c == b'=') {
                 let mut path = b"env:".to_vec();
                 path.extend_from_slice(&slice[..sep]);
-                path.push((b"\0")[0]);
-                let path = ::cstr_from_bytes_with_nul_unchecked(path.as_slice());
-                let fd = open(path, O_WRONLY as i32, O_CREAT as u16);
-                if fd != -1 {
-                    let _ = syscall::write(fd as usize, &slice[sep + 1..]);
+                if let Ok(fd) = syscall::open(&path, O_WRONLY | O_CREAT) {
+                    let _ = syscall::write(fd, &slice[sep + 1..]);
                 }
             }
             env = env.offset(1);
