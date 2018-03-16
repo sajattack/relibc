@@ -57,6 +57,6 @@ int execlp(const char* file, const char* argv0, ...) {
 		}
 		argv[i] = NULL;
 		va_end(ap);
-		return execvp(path, argv);
+		return execvp(file, argv);
 	}
 }
