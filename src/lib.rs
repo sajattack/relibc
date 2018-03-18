@@ -11,8 +11,10 @@ extern crate fenv;
 extern crate float;
 extern crate grp;
 extern crate mman;
+extern crate netinet;
 extern crate resource;
 extern crate semaphore;
+extern crate socket;
 extern crate stat;
 extern crate stdio;
 extern crate stdlib;
@@ -20,6 +22,7 @@ extern crate string;
 extern crate sys_time;
 extern crate time;
 extern crate unistd;
+extern crate wait;
 extern crate wctype;
 
 #[lang = "eh_personality"]

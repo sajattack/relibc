@@ -34,5 +34,6 @@
 /string/strrchr
 /string/strspn
 /unlink
+/waitpid
 /write
 
