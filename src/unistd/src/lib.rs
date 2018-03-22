@@ -100,24 +100,24 @@ pub extern "C" fn encrypt(block: [c_char; 64], edflag: c_int) {
     unimplemented!();
 }
 
-//#[no_mangle]
-//pub extern "C" fn execl(path: *const c_char, args: *const *mut c_char) -> c_int {
-//  unimplemented!();
-//}
+// #[no_mangle]
+// pub extern "C" fn execl(path: *const c_char, args: *const *mut c_char) -> c_int {
+//   unimplemented!();
+// }
 
-//#[no_mangle]
-//pub extern "C" fn execle(
-//  path: *const c_char,
-//  args: *const *mut c_char,
-//  envp: *const *mut c_char,
-//) -> c_int {
-//  unimplemented!();
-//}
+// #[no_mangle]
+// pub extern "C" fn execle(
+//   path: *const c_char,
+//   args: *const *mut c_char,
+//   envp: *const *mut c_char,
+// ) -> c_int {
+//   unimplemented!();
+// }
 
-//#[no_mangle]
-//pub extern "C" fn execlp(file: *const c_char, args: *const *mut c_char) -> c_int {
-//  unimplemented!();
-//}
+// #[no_mangle]
+// pub extern "C" fn execlp(file: *const c_char, args: *const *mut c_char) -> c_int {
+//   unimplemented!();
+// }
 
 #[no_mangle]
 pub extern "C" fn execv(path: *const c_char, argv: *const *mut c_char) -> c_int {
