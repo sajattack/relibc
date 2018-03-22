@@ -1,3 +1,6 @@
+#ifndef _BITS_EXEC_H
+#define _BITS_EXEC_H
+
 int execl(const char *path, const char* argv0, ...)
 {
 	int argc;
@@ -60,3 +63,5 @@ int execlp(const char* file, const char* argv0, ...) {
 		return execvp(file, argv);
 	}
 }
+
+#endif

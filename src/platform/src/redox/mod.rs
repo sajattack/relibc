@@ -56,10 +56,29 @@ pub fn execve(path: *const c_char, argv: *const *mut c_char, envp: *const *mut c
             let slice = c_str(*env);
             // Should always contain a =, but worth checking
             if let Some(sep) = slice.iter().position(|&c| c == b'=') {
-                let mut path = b"env:".to_vec();
-                path.extend_from_slice(&slice[..sep]);
-                if let Ok(fd) = syscall::open(&path, O_WRONLY | O_CREAT) {
-                    let _ = syscall::write(fd, &slice[sep + 1..]);
+                // If the environment variable has no name, do not attempt
+                // to add it to the env.
+                if sep > 0 {
+                    let mut path = vec![b'e', b'n', b'v', b':'];
+                    path.extend_from_slice(&slice[..sep]);
+                    match syscall::open(&path, O_WRONLY | O_CREAT) {
+                        Ok(fd) => {
+                            // If the environment variable has no value, there
+                            // is no need to write anything to the env scheme.
+                            if sep + 1 < slice.len() {
+                                let n = match syscall::write(fd, &slice[sep + 1..]) {
+                                    Ok(n) => n,
+                                    err => { return e(err); }
+                                }
+                            }
+                            // Cleanup after adding the variable.
+                            match syscall::close(fd) {
+                                Ok(_) => (),
+                                e => { return e(err); }
+                            }
+                        }
+                        err => { return e(err); }
+                    }
                 }
             }
             env = env.offset(1);
