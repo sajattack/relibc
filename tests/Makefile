@@ -21,6 +21,7 @@ EXPECT_BINS=\
 	rmdir \
 	sleep \
 	sprintf \
+	stdlib/bsearch \
 	stdlib/strtol \
 	stdlib/a64l \
 	string/strncmp \
@@ -30,6 +31,9 @@ EXPECT_BINS=\
 	string/strspn \
 	string/strstr \
 	string/strpbrk \
+	string/strtok \
+	string/strtok_r \
+	unistd/getopt \
 	unlink \
 	waitpid \
 	write
