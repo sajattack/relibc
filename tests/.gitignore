@@ -26,6 +26,7 @@
 /rmdir
 /setid
 /sprintf
+/stdlib/bsearch
 /stdlib/strtol
 /stdlib/a64l
 /string/strncmp
@@ -33,6 +34,7 @@
 /string/strchr
 /string/strrchr
 /string/strspn
+/unistd/getopt
 /unlink
 /waitpid
 /write
